@@ -3,7 +3,9 @@
 const R = require("ramda");
 const input = require("./input");
 const { log } = require("../common/functions");
-const { parseRow } = require("./functions");
+const { arrayToObj } = require("./functions");
+
+const parseRow = R.compose(arrayToObj, R.match(/(\d+)-(\d+) (\w): (\w+)/));
 
 const isValidPassword = ({ password, policy }) =>
   (password.charAt(policy.min - 1) === policy.ch &&
@@ -11,12 +13,7 @@ const isValidPassword = ({ password, policy }) =>
   (password.charAt(policy.min - 1) !== policy.ch &&
     password.charAt(policy.max - 1) === policy.ch);
 
-// >>>> pure functions above this line
+const app = R.compose(R.length, R.filter(isValidPassword), R.map(parseRow));
 
-// console.log(JSON.stringify(parseRow("16-18 h: hhhhhhhhhhhhhhhhhh"), null, 2));
-
-const app = (rows) => rows.map(parseRow).filter(isValidPassword).length;
-
-// >>>> setup above this line, only execution below here
-
+// execute
 log(app(input));
